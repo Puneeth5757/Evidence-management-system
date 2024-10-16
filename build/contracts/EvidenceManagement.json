@@ -2482,12 +2482,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0xC6aB18aC2e58fbE8Bb6dC4f2b4A3B7707bdAe1a3",
-      "transactionHash": "0x9e110980e1ba01e760df7f003157e864e42ff3515a32edfcb0ab2e88c64db38f"
+      "address": "0x13d15eb674FEB782D219586a337968E855bBba0C",
+      "transactionHash": "0xe461baea40d1f9ed6e94d9082af8f7adf88b4395ebf2c1626434b131a034cce8"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2024-10-15T17:17:26.083Z",
+  "updatedAt": "2024-10-16T18:16:11.057Z",
   "devdoc": {
     "methods": {}
   },

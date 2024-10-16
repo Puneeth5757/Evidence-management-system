@@ -18,17 +18,23 @@ const FetchEvidence = ({ contract }) => {
       setErrorMessage(""); // Clear any previous error messages
 
       contract.methods
-        .getEvidence(evidenceId)
+        .getEvidence(parseInt(evidenceId))  // Convert evidenceId to an integer
         .call()
         .then((result) => {
-          if (result[0] === "") {
+          // Handle BigInt conversion here
+          const timestamp = result[2];  // This is likely to be a BigInt
+
+          // Convert BigInt to a number
+          const timestampFormatted = new Date(Number(timestamp) * 1000).toLocaleString(); // Convert BigInt to Date object
+
+          if (!result[0] || !result[1] || timestamp === "0" || result[3] === "0x0000000000000000000000000000000000000000") {
             setErrorMessage("No evidence found with the given ID.");
             setEvidenceDetails(null); // Reset evidence details if nothing is found
           } else {
             setEvidenceDetails({
               evidenceHash: result[0],
               description: result[1],
-              timestamp: new Date(result[2] * 1000).toLocaleString(),
+              timestamp: timestampFormatted,  // Use the formatted timestamp
               addedBy: result[3],
             });
           }
