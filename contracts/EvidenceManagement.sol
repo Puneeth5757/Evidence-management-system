@@ -1,35 +1,88 @@
 pragma solidity ^0.5.0;
 
 contract EvidenceManagement {
-    // uint public evidenceCount = 0;
-
-    // Struct to store evidence data
     struct Evidence {
-        string evidenceHash; // Hash of the evidence (could be a file hash)
-        string description;  // Description of the evidence
-        uint256 timestamp;   // Time evidence was added
-        address addedBy;     // Address of the user who added it
+        string evidenceId;
+        string caseName;
+        string victimName;
+        string location;
+        string description;
+        string evidenceHash;
+        uint256 timestamp;
+        address addedBy;
     }
 
-    // Mapping to store evidences with unique ids
-    mapping(uint256 => Evidence) public evidences;
+    mapping(string => Evidence) private evidences;  // Keep mapping private
     uint256 public evidenceCount;
 
-    // Event to trigger when new evidence is added
-    event EvidenceAdded(uint256 evidenceId, string evidenceHash, string description, address addedBy);
+    event EvidenceAdded(
+        string evidenceId,
+        string caseName,
+        string victimName,
+        string location,
+        string description,
+        string evidenceHash,
+        address addedBy
+    );
 
-    // Function to add new evidence
-    function addEvidence(string memory _evidenceHash, string memory _description) public {
+    // Add evidence
+    function addEvidence(
+        string memory _evidenceId,
+        string memory _caseName,
+        string memory _victimName,
+        string memory _location,
+        string memory _description,
+        string memory _evidenceHash
+    ) public {
+        require(bytes(_evidenceId).length > 0, "Evidence ID cannot be empty");
+        require(bytes(evidences[_evidenceId].evidenceId).length == 0, "Evidence with this ID already exists");
+
+        evidences[_evidenceId] = Evidence(
+            _evidenceId,
+            _caseName,
+            _victimName,
+            _location,
+            _description,
+            _evidenceHash,
+            block.timestamp,
+            msg.sender
+        );
+
         evidenceCount++;
-        evidences[evidenceCount] = Evidence(_evidenceHash, _description, block.timestamp, msg.sender);
 
-        // Emit event
-        emit EvidenceAdded(evidenceCount, _evidenceHash, _description, msg.sender);
+        emit EvidenceAdded(
+            _evidenceId,
+            _caseName,
+            _victimName,
+            _location,
+            _description,
+            _evidenceHash,
+            msg.sender
+        );
     }
 
-    // Function to get evidence by ID
-    function getEvidence(uint256 _id) public view returns (string memory, string memory, uint256, address) {
-        Evidence memory e = evidences[_id];
-        return (e.evidenceHash, e.description, e.timestamp, e.addedBy);
+    // Custom getter for evidence
+    function getEvidence(string memory _evidenceId) public view returns (
+        string memory,
+        string memory,
+        string memory,
+        string memory,
+        string memory,
+        string memory,
+        uint256,
+        address
+    ) {
+        Evidence memory e = evidences[_evidenceId];
+        require(bytes(e.evidenceId).length > 0, "Evidence not found");
+        return (
+            e.evidenceId,
+            e.caseName,
+            e.victimName,
+            e.location,
+            e.description,
+            e.evidenceHash,
+            e.timestamp,
+            e.addedBy
+        );
     }
 }

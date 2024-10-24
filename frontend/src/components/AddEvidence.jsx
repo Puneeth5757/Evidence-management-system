@@ -2,35 +2,43 @@ import React, { useState } from "react";
 import { Button, Form, InputGroup, FormControl, Card, Spinner, Alert } from "react-bootstrap";
 
 const AddEvidence = ({ contract, account }) => {
-  const [evidenceHash, setEvidenceHash] = useState("");
+  const [evidenceId, setEvidenceId] = useState("");
+  const [caseName, setCaseName] = useState("");
+  const [victimName, setVictimName] = useState("");
+  const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false); // To show a loading spinner while adding evidence
-  const [errorMessage, setErrorMessage] = useState(""); // For displaying error messages
+  const [evidenceHash, setEvidenceHash] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const addEvidence = () => {
-    if (!evidenceHash || !description) {
-      setErrorMessage("Please fill in both fields.");
+    if (!evidenceId || !caseName || !victimName || !location || !description || !evidenceHash) {
+      setErrorMessage("Please fill in all fields.");
       return;
     }
 
     if (contract && account) {
       setLoading(true);
-      setErrorMessage(""); // Clear any previous error messages
+      setErrorMessage("");
 
       contract.methods
-        .addEvidence(evidenceHash, description)
+        .addEvidence(evidenceId, caseName, victimName, location, description, evidenceHash)
         .send({ from: account })
         .then(() => {
           alert("Evidence added successfully!");
-          setEvidenceHash("");
+          setEvidenceId("");
+          setCaseName("");
+          setVictimName("");
+          setLocation("");
           setDescription("");
+          setEvidenceHash("");
         })
         .catch((err) => {
           console.error(err);
           setErrorMessage("Failed to add evidence. Please try again.");
         })
         .finally(() => {
-          setLoading(false); // Hide loading spinner after the process is complete
+          setLoading(false);
         });
     } else {
       setErrorMessage("Contract or account is not available.");
@@ -47,11 +55,41 @@ const AddEvidence = ({ contract, account }) => {
 
         <Form>
           <InputGroup className="mb-3">
-            <InputGroup.Text>Hash</InputGroup.Text>
+            <InputGroup.Text>ID</InputGroup.Text>
             <FormControl
-              placeholder="Evidence Hash"
-              value={evidenceHash}
-              onChange={(e) => setEvidenceHash(e.target.value)}
+              placeholder="Evidence ID"
+              value={evidenceId}
+              onChange={(e) => setEvidenceId(e.target.value)}
+              disabled={loading}
+            />
+          </InputGroup>
+
+          <InputGroup className="mb-3">
+            <InputGroup.Text>Case Name</InputGroup.Text>
+            <FormControl
+              placeholder="Case Name"
+              value={caseName}
+              onChange={(e) => setCaseName(e.target.value)}
+              disabled={loading}
+            />
+          </InputGroup>
+
+          <InputGroup className="mb-3">
+            <InputGroup.Text>Victim Name</InputGroup.Text>
+            <FormControl
+              placeholder="Victim Name"
+              value={victimName}
+              onChange={(e) => setVictimName(e.target.value)}
+              disabled={loading}
+            />
+          </InputGroup>
+
+          <InputGroup className="mb-3">
+            <InputGroup.Text>Location</InputGroup.Text>
+            <FormControl
+              placeholder="Location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
               disabled={loading}
             />
           </InputGroup>
@@ -59,9 +97,19 @@ const AddEvidence = ({ contract, account }) => {
           <InputGroup className="mb-3">
             <InputGroup.Text>Description</InputGroup.Text>
             <FormControl
-              placeholder="Description"
+              placeholder="Detailed Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              disabled={loading}
+            />
+          </InputGroup>
+
+          <InputGroup className="mb-3">
+            <InputGroup.Text>Hash</InputGroup.Text>
+            <FormControl
+              placeholder="Evidence Hash"
+              value={evidenceHash}
+              onChange={(e) => setEvidenceHash(e.target.value)}
               disabled={loading}
             />
           </InputGroup>

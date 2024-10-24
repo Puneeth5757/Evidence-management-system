@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom';
 import Web3 from "web3";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -10,32 +11,42 @@ import { Container, Row, Col, Spinner } from "react-bootstrap";
 const contractABI = [
   {
     "constant": true,
-    "inputs": [{ "name": "_id", "type": "uint256" }],
+    "inputs": [{ "name": "_id", "type": "string" }],
     "name": "getEvidence",
     "outputs": [
-      { "name": "", "type": "string" },
-      { "name": "", "type": "string" },
-      { "name": "", "type": "uint256" },
-      { "name": "", "type": "address" },
+      { "name": "evidenceId", "type": "string" },
+      { "name": "caseName", "type": "string" },
+      { "name": "victimName", "type": "string" },
+      { "name": "location", "type": "string" },
+      { "name": "description", "type": "string" },
+      { "name": "evidenceHash", "type": "string" },
+      { "name": "timestamp", "type": "uint256" },
+      { "name": "addedBy", "type": "address" }
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
+    "type": "function"
   },
   {
     "constant": false,
     "inputs": [
-      { "name": "_evidenceHash", "type": "string" },
+      { "name": "_evidenceId", "type": "string" },
+      { "name": "_caseName", "type": "string" },
+      { "name": "_victimName", "type": "string" },
+      { "name": "_location", "type": "string" },
       { "name": "_description", "type": "string" },
+      { "name": "_evidenceHash", "type": "string" }
     ],
     "name": "addEvidence",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
-    "type": "function",
-  },
+    "type": "function"
+  }
 ];
-const contractAddress = "0x6D839fFF88F013A22F8c404294A6Cd1551d966E7";
+
+
+const contractAddress = "0xBE0744f5F0B74f5088cCA48F5e8fc4E1DF3676e1";
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -70,25 +81,25 @@ function App() {
   }
 
   return (
+    <Router>
     <Container className="mt-5">
       <Header />
-
-      <Row className="mb-4">
-        <Col>
-          {/* Pass contract and account as props to AddEvidence component */}
-          <AddEvidence contract={contract} account={account} />
-        </Col>
-      </Row>
-
-      <Row className="mb-4">
-        <Col>
-          {/* Pass contract as a prop to FetchEvidence component */}
-          <FetchEvidence contract={contract} />
-        </Col>
-      </Row>
+      <Routes>
+        <Route
+          path="/add-evidence"
+          element={<AddEvidence contract={contract} account={account} />}
+        />
+        <Route
+          path="/fetch-evidence"
+          element={<FetchEvidence contract={contract} />}
+        />
+        <Route path="/" element={<Navigate to="/add-evidence" />} />
+        {/* You can add more routes for other components here */}
+      </Routes>
 
       <Footer />
     </Container>
+  </Router>
   );
 }
 

@@ -4,10 +4,10 @@ import { Button, Form, InputGroup, FormControl, Card, Spinner, Alert } from "rea
 const FetchEvidence = ({ contract }) => {
   const [evidenceId, setEvidenceId] = useState("");
   const [evidenceDetails, setEvidenceDetails] = useState(null);
-  const [loading, setLoading] = useState(false); // To show a loading spinner while fetching evidence
-  const [errorMessage, setErrorMessage] = useState(""); // For displaying error messages
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const getEvidence = () => {
+  const getEvidence = async () => {
     if (!evidenceId) {
       setErrorMessage("Please provide a valid evidence ID.");
       return;
@@ -15,37 +15,37 @@ const FetchEvidence = ({ contract }) => {
 
     if (contract) {
       setLoading(true);
-      setErrorMessage(""); // Clear any previous error messages
+      setErrorMessage("");
 
-      contract.methods
-        .getEvidence(parseInt(evidenceId))  // Convert evidenceId to an integer
-        .call()
-        .then((result) => {
-          // Handle BigInt conversion here
-          const timestamp = result[2];  // This is likely to be a BigInt
+      try {
+        console.log("Fetching evidence for ID:", evidenceId);
+        const result = await contract.methods.getEvidence(evidenceId).call();
 
-          // Convert BigInt to a number
-          const timestampFormatted = new Date(Number(timestamp) * 1000).toLocaleString(); // Convert BigInt to Date object
+        // Check if the evidence ID exists
+        if (result[0] === "") {
+          setErrorMessage("No evidence found with the given ID.");
+          setEvidenceDetails(null);
+        } else {
+          const timestamp = result[6];
+          const timestampFormatted = new Date(Number(timestamp) * 1000).toLocaleString();
 
-          if (!result[0] || !result[1] || timestamp === "0" || result[3] === "0x0000000000000000000000000000000000000000") {
-            setErrorMessage("No evidence found with the given ID.");
-            setEvidenceDetails(null); // Reset evidence details if nothing is found
-          } else {
-            setEvidenceDetails({
-              evidenceHash: result[0],
-              description: result[1],
-              timestamp: timestampFormatted,  // Use the formatted timestamp
-              addedBy: result[3],
-            });
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          setErrorMessage("Failed to fetch evidence. Please try again.");
-        })
-        .finally(() => {
-          setLoading(false); // Hide loading spinner after the process is complete
-        });
+          setEvidenceDetails({
+            evidenceId: result[0],
+            caseName: result[1],
+            victimName: result[2],
+            location: result[3],
+            description: result[4],
+            evidenceHash: result[5],
+            timestamp: timestampFormatted,
+            addedBy: result[7],
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching evidence:", error);
+        setErrorMessage("Failed to fetch evidence. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     } else {
       setErrorMessage("Contract is not available.");
       setLoading(false);
@@ -55,32 +55,39 @@ const FetchEvidence = ({ contract }) => {
   return (
     <Card>
       <Card.Body>
-        <Card.Title>Retrieve Evidence</Card.Title>
+        <Card.Title>Fetch Evidence</Card.Title>
 
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
         <Form>
           <InputGroup className="mb-3">
-            <InputGroup.Text>Evidence ID</InputGroup.Text>
+            <InputGroup.Text>ID</InputGroup.Text>
             <FormControl
-              placeholder="Evidence ID"
+              placeholder="Enter Evidence ID"
               value={evidenceId}
               onChange={(e) => setEvidenceId(e.target.value)}
               disabled={loading}
             />
           </InputGroup>
 
-          <Button variant="secondary" onClick={getEvidence} disabled={loading}>
-            {loading ? <Spinner animation="border" size="sm" /> : "Get Evidence"}
+          <Button variant="primary" onClick={getEvidence} disabled={loading}>
+            {loading ? <Spinner animation="border" size="sm" /> : "Fetch Evidence"}
           </Button>
         </Form>
 
         {evidenceDetails && (
-          <div className="mt-4">
-            <p><strong>Evidence Hash:</strong> {evidenceDetails.evidenceHash}</p>
-            <p><strong>Description:</strong> {evidenceDetails.description}</p>
-            <p><strong>Timestamp:</strong> {evidenceDetails.timestamp}</p>
-            <p><strong>Added By:</strong> {evidenceDetails.addedBy}</p>
+          <div className="mt-3">
+            <h5>Evidence Details:</h5>
+            <ul>
+              <li><strong>ID:</strong> {evidenceDetails.evidenceId}</li>
+              <li><strong>Case Name:</strong> {evidenceDetails.caseName}</li>
+              <li><strong>Victim Name:</strong> {evidenceDetails.victimName}</li>
+              <li><strong>Location:</strong> {evidenceDetails.location}</li>
+              <li><strong>Description:</strong> {evidenceDetails.description}</li>
+              <li><strong>Hash:</strong> {evidenceDetails.evidenceHash}</li>
+              <li><strong>Added On:</strong> {evidenceDetails.timestamp}</li>
+              <li><strong>Added By:</strong> {evidenceDetails.addedBy}</li>
+            </ul>
           </div>
         )}
       </Card.Body>
