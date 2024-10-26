@@ -55,7 +55,7 @@ const contractABI = [
   }
 ];
 
-const contractAddress = "0xdd3C87284fCD09215b9EDca13cb83bdAa1d97Da9";
+const contractAddress = "0xF7037F2eEfE354b4592B0fa71D68794b26B490af";
 
 function App() {
   const [account, setAccount] = useState(null);

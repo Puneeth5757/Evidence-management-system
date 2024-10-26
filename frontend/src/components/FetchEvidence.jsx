@@ -96,6 +96,16 @@ const FetchEvidence = ({ contract }) => {
               <li><strong>Added On:</strong> {evidenceDetails.timestamp}</li>
               <li><strong>Added By:</strong> {evidenceDetails.addedBy}</li>
             </ul>
+
+            {/* Display the image from IPFS */}
+            <h5>Evidence Image:</h5>
+            {evidenceDetails.evidenceHash && (
+              <img
+                src={`https://ipfs.infura.io/ipfs/${evidenceDetails.evidenceHash}`}
+                alt="Evidence"
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
+            )}
           </div>
         )}
       </Card.Body>

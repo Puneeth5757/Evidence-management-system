@@ -49,8 +49,8 @@ const AllEvidence = ({ contract }) => {
   }, []);
 
   return (
-    <Card >
-      <Card.Body >
+    <Card>
+      <Card.Body>
         <Card.Title className="text-center"><b>All Evidence</b></Card.Title>
 
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
@@ -69,6 +69,15 @@ const AllEvidence = ({ contract }) => {
                 <p><strong>Hash:</strong> {evidence.evidenceHash}</p>
                 <p><strong>Added On:</strong> {evidence.timestamp}</p>
                 <p><strong>Added By:</strong> {evidence.addedBy}</p>
+                
+                {/* Display the image from IPFS */}
+                {evidence.evidenceHash && (
+                  <img
+                    src={`https://ipfs.infura.io/ipfs/${evidence.evidenceHash}`}
+                    alt="Evidence"
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                  />
+                )}
               </ListGroup.Item>
             ))}
           </ListGroup>

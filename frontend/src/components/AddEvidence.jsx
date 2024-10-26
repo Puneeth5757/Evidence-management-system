@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, InputGroup, FormControl, Card, Spinner, Alert } from "react-bootstrap";
+import uploadToIPFS from '../utilities/ipfsUpload';
 
 const AddEvidence = ({ contract, account }) => {
   const [evidenceId, setEvidenceId] = useState("");
@@ -7,41 +8,41 @@ const AddEvidence = ({ contract, account }) => {
   const [victimName, setVictimName] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
-  const [evidenceHash, setEvidenceHash] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [image, setImage] = useState(null);
 
-  const addEvidence = () => {
-    if (!evidenceId || !caseName || !victimName || !location || !description || !evidenceHash) {
-      setErrorMessage("Please fill in all fields.");
+  const addEvidence = async () => {
+    if (!evidenceId || !caseName || !victimName || !location || !description || !image) {
+      setErrorMessage("Please fill in all fields and upload an image.");
       return;
     }
 
-    if (contract && account) {
-      setLoading(true);
-      setErrorMessage("");
+    setLoading(true);
+    setErrorMessage("");
 
-      contract.methods
-        .addEvidence(evidenceId, caseName, victimName, location, description, evidenceHash)
-        .send({ from: account })
-        .then(() => {
-          alert("Evidence added successfully!");
-          setEvidenceId("");
-          setCaseName("");
-          setVictimName("");
-          setLocation("");
-          setDescription("");
-          setEvidenceHash("");
-        })
-        .catch((err) => {
-          console.error(err);
-          setErrorMessage("Failed to add evidence. Please try again.");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setErrorMessage("Contract or account is not available.");
+    try {
+      // Upload the image to IPFS using Pinata
+      const result = await uploadToIPFS(image);
+      const hash = result.IpfsHash; // Get the IPFS hash from the response
+
+      // Now call the smart contract to add the evidence
+      await contract.methods
+        .addEvidence(evidenceId, caseName, victimName, location, description, hash)
+        .send({ from: account });
+
+      alert("Evidence added successfully!");
+      // Reset the form fields
+      setEvidenceId("");
+      setCaseName("");
+      setVictimName("");
+      setLocation("");
+      setDescription("");
+      setImage(null);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Failed to add evidence. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -105,11 +106,10 @@ const AddEvidence = ({ contract, account }) => {
           </InputGroup>
 
           <InputGroup className="mb-3">
-            <InputGroup.Text>Hash</InputGroup.Text>
+            <InputGroup.Text>Image</InputGroup.Text>
             <FormControl
-              placeholder="Evidence Hash"
-              value={evidenceHash}
-              onChange={(e) => setEvidenceHash(e.target.value)}
+              type="file"
+              onChange={(e) => setImage(e.target.files[0])}
               disabled={loading}
             />
           </InputGroup>
