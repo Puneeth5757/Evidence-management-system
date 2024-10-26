@@ -1,4 +1,5 @@
 pragma solidity ^0.5.0;
+pragma experimental ABIEncoderV2;
 
 contract EvidenceManagement {
     struct Evidence {
@@ -12,7 +13,8 @@ contract EvidenceManagement {
         address addedBy;
     }
 
-    mapping(string => Evidence) private evidences;  // Keep mapping private
+    mapping(string => Evidence) private evidences;
+    string[] private evidenceIds;
     uint256 public evidenceCount;
 
     event EvidenceAdded(
@@ -25,7 +27,6 @@ contract EvidenceManagement {
         address addedBy
     );
 
-    // Add evidence
     function addEvidence(
         string memory _evidenceId,
         string memory _caseName,
@@ -48,6 +49,7 @@ contract EvidenceManagement {
             msg.sender
         );
 
+        evidenceIds.push(_evidenceId);
         evidenceCount++;
 
         emit EvidenceAdded(
@@ -61,7 +63,6 @@ contract EvidenceManagement {
         );
     }
 
-    // Custom getter for evidence
     function getEvidence(string memory _evidenceId) public view returns (
         string memory,
         string memory,
@@ -84,5 +85,9 @@ contract EvidenceManagement {
             e.timestamp,
             e.addedBy
         );
+    }
+
+    function getAllEvidence() public view returns (string[] memory) {
+        return evidenceIds;
     }
 }

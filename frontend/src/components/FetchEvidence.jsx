@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Button, Form, InputGroup, FormControl, Card, Spinner, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const FetchEvidence = ({ contract }) => {
   const [evidenceId, setEvidenceId] = useState("");
   const [evidenceDetails, setEvidenceDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const navigate = useNavigate(); // Initialize navigate
 
   const getEvidence = async () => {
     if (!evidenceId) {
@@ -70,8 +73,13 @@ const FetchEvidence = ({ contract }) => {
             />
           </InputGroup>
 
-          <Button variant="primary" onClick={getEvidence} disabled={loading}>
+          <Button variant="primary" onClick={getEvidence} disabled={loading} className="me-2">
             {loading ? <Spinner animation="border" size="sm" /> : "Fetch Evidence"}
+          </Button>
+
+          {/* Button to navigate to All Evidence component */}
+          <Button variant="secondary" onClick={() => navigate("/all-evidence")}>
+            View All Evidence
           </Button>
         </Form>
 

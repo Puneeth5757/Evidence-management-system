@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Web3 from "web3";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AddEvidence from "./components/AddEvidence";
 import FetchEvidence from "./components/FetchEvidence";
-import { Container, Row, Col, Spinner } from "react-bootstrap";
+import AllEvidence from "./components/AllEvidence";
+import { Container, Spinner } from "react-bootstrap";
 
-// Contract ABI and address (replace with actual values)
 const contractABI = [
+  // Add all ABI items here, including getEvidence and addEvidence
   {
     "constant": true,
     "inputs": [{ "name": "_id", "type": "string" }],
@@ -42,19 +43,26 @@ const contractABI = [
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getAllEvidence",
+    "outputs": [{ "name": "", "type": "string[]" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   }
 ];
 
-
-const contractAddress = "0xBE0744f5F0B74f5088cCA48F5e8fc4E1DF3676e1";
+const contractAddress = "0xdd3C87284fCD09215b9EDca13cb83bdAa1d97Da9";
 
 function App() {
   const [account, setAccount] = useState(null);
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
-  const [loading, setLoading] = useState(true); // Loading state for Web3 and contract
+  const [loading, setLoading] = useState(true);
 
-  // Effect to initialize Web3, contract, and user account
   useEffect(() => {
     if (window.ethereum && window.ethereum.isConnected()) {
       window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
@@ -64,7 +72,7 @@ function App() {
 
         const evidenceContract = new web3Instance.eth.Contract(contractABI, contractAddress);
         setContract(evidenceContract);
-        setLoading(false); // Set loading to false once contract is initialized
+        setLoading(false);
       }).catch((error) => {
         console.error("Error connecting to MetaMask:", error);
         alert("Failed to connect to MetaMask.");
@@ -82,24 +90,17 @@ function App() {
 
   return (
     <Router>
-    <Container className="mt-5">
-      <Header />
-      <Routes>
-        <Route
-          path="/add-evidence"
-          element={<AddEvidence contract={contract} account={account} />}
-        />
-        <Route
-          path="/fetch-evidence"
-          element={<FetchEvidence contract={contract} />}
-        />
-        <Route path="/" element={<Navigate to="/add-evidence" />} />
-        {/* You can add more routes for other components here */}
-      </Routes>
-
-      <Footer />
-    </Container>
-  </Router>
+      <Container className="mt-5">
+        <Header />
+        <Routes>
+          <Route path="/add-evidence" element={<AddEvidence contract={contract} account={account} />} />
+          <Route path="/fetch-evidence" element={<FetchEvidence contract={contract} />} />
+          <Route path="/all-evidence" element={<AllEvidence contract={contract} />} />
+          <Route path="/" element={<Navigate to="/add-evidence" />} />
+        </Routes>
+        <Footer />
+      </Container>
+    </Router>
   );
 }
 
