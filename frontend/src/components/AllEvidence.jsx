@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Card, ListGroup, Spinner, Alert } from "react-bootstrap";
+import { Card, ListGroup, Spinner, Alert, Form, InputGroup, FormControl, Row, Col } from "react-bootstrap";
 
 const AllEvidence = ({ contract }) => {
   const [evidenceList, setEvidenceList] = useState([]);
+  const [filteredEvidenceList, setFilteredEvidenceList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchCaseName, setSearchCaseName] = useState("");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchDate, setSearchDate] = useState("");
+  const [searchVictimName, setSearchVictimName] = useState("");
 
   const fetchAllEvidence = async () => {
     if (!contract) {
@@ -21,7 +26,6 @@ const AllEvidence = ({ contract }) => {
       const evidenceDetails = await Promise.all(
         ids.map(async (id) => {
           const result = await contract.methods.getEvidence(id).call();
-
           return {
             evidenceId: result[0],
             caseName: result[1],
@@ -36,6 +40,7 @@ const AllEvidence = ({ contract }) => {
       );
 
       setEvidenceList(evidenceDetails);
+      setFilteredEvidenceList(evidenceDetails);
     } catch (error) {
       console.error("Error fetching evidence details:", error);
       setErrorMessage("Failed to fetch evidence details.");
@@ -48,6 +53,21 @@ const AllEvidence = ({ contract }) => {
     fetchAllEvidence();
   }, []);
 
+  const handleSearch = () => {
+    const filtered = evidenceList.filter(evidence => 
+      evidence.caseName.toLowerCase().includes(searchCaseName.toLowerCase()) &&
+      evidence.location.toLowerCase().includes(searchLocation.toLowerCase()) &&
+      evidence.timestamp.toLowerCase().includes(searchDate.toLowerCase()) &&
+      evidence.victimName.toLowerCase().includes(searchVictimName.toLowerCase())
+    );
+
+    setFilteredEvidenceList(filtered);
+  };
+
+  useEffect(() => {
+    handleSearch(); // Call search whenever any of the search terms change
+  }, [searchCaseName, searchLocation, searchDate, searchVictimName]);
+
   return (
     <Card>
       <Card.Body>
@@ -55,11 +75,55 @@ const AllEvidence = ({ contract }) => {
 
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
+        {/* Sticky search bar with grid layout */}
+        <div className="sticky-top bg-light p-3">
+          <Row className="mb-3">
+            <Col md={6}>
+              <InputGroup>
+                <FormControl
+                  placeholder="Search by case name"
+                  value={searchCaseName}
+                  onChange={(e) => setSearchCaseName(e.target.value)}
+                />
+              </InputGroup>
+            </Col>
+            <Col md={6}>
+              <InputGroup>
+                <FormControl
+                  placeholder="Search by location"
+                  value={searchLocation}
+                  onChange={(e) => setSearchLocation(e.target.value)}
+                />
+              </InputGroup>
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col md={6}>
+              <InputGroup>
+                <FormControl
+                  placeholder="Search by date"
+                  value={searchDate}
+                  onChange={(e) => setSearchDate(e.target.value)}
+                />
+              </InputGroup>
+            </Col>
+            <Col md={6}>
+              <InputGroup>
+                <FormControl
+                  placeholder="Search by victim name"
+                  value={searchVictimName}
+                  onChange={(e) => setSearchVictimName(e.target.value)}
+                />
+              </InputGroup>
+            </Col>
+          </Row>
+        </div>
+
         {loading ? (
           <Spinner animation="border" />
         ) : (
           <ListGroup>
-            {evidenceList.map((evidence) => (
+            {filteredEvidenceList.map((evidence) => (
               <ListGroup.Item key={evidence.evidenceId}>
                 <h5>ID: {evidence.evidenceId}</h5>
                 <p><strong>Case Name:</strong> {evidence.caseName}</p>
