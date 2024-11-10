@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, InputGroup, FormControl, Card, Spinner, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 const FetchEvidence = ({ contract }) => {
   const [evidenceId, setEvidenceId] = useState("");
@@ -8,7 +8,7 @@ const FetchEvidence = ({ contract }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const getEvidence = async () => {
     if (!evidenceId) {
@@ -21,15 +21,13 @@ const FetchEvidence = ({ contract }) => {
       setErrorMessage("");
 
       try {
-        console.log("Fetching evidence for ID:", evidenceId);
         const result = await contract.methods.getEvidence(evidenceId).call();
 
-        // Check if the evidence ID exists
         if (result[0] === "") {
           setErrorMessage("No evidence found with the given ID.");
           setEvidenceDetails(null);
         } else {
-          const timestamp = result[6];
+          const timestamp = result[7];
           const timestampFormatted = new Date(Number(timestamp) * 1000).toLocaleString();
 
           setEvidenceDetails({
@@ -39,8 +37,9 @@ const FetchEvidence = ({ contract }) => {
             location: result[3],
             description: result[4],
             evidenceHash: result[5],
+            pdfHash: result[6],
             timestamp: timestampFormatted,
-            addedBy: result[7],
+            addedBy: result[8], // Assuming this index is correct based on contract structure
           });
         }
       } catch (error) {
@@ -77,7 +76,6 @@ const FetchEvidence = ({ contract }) => {
             {loading ? <Spinner animation="border" size="sm" /> : "Fetch Evidence"}
           </Button>
 
-          {/* Button to navigate to All Evidence component */}
           <Button variant="secondary" onClick={() => navigate("/all-evidence")}>
             View All Evidence
           </Button>
@@ -97,14 +95,27 @@ const FetchEvidence = ({ contract }) => {
               <li><strong>Added By:</strong> {evidenceDetails.addedBy}</li>
             </ul>
 
-            {/* Display the image from IPFS */}
             <h5>Evidence Image:</h5>
             {evidenceDetails.evidenceHash && (
               <img
-                src={`https://ipfs.infura.io/ipfs/${evidenceDetails.evidenceHash}`}
+                src={`https://ipfs.io/ipfs/${evidenceDetails.evidenceHash}`}
                 alt="Evidence"
                 style={{ maxWidth: '100%', height: 'auto' }}
               />
+            )}
+
+            {evidenceDetails.pdfHash && (
+              <div className="mt-3">
+                <Button
+                  variant="info"
+                  onClick={() => {
+                    const pdfUrl = `https://ipfs.io/ipfs/${encodeURIComponent(evidenceDetails.pdfHash)}`;
+                    window.open(pdfUrl, "_blank");
+                  }}
+                >
+                  View PDF
+                </Button>
+              </div>
             )}
           </div>
         )}

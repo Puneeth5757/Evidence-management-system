@@ -11,10 +11,11 @@ const AddEvidence = ({ contract, account }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [image, setImage] = useState(null);
+  const [pdf, setPdf] = useState(null);
 
   const addEvidence = async () => {
-    if (!evidenceId || !caseName || !victimName || !location || !description || !image) {
-      setErrorMessage("Please fill in all fields and upload an image.");
+    if (!evidenceId || !caseName || !victimName || !location || !description || !image || !pdf) {
+      setErrorMessage("Please fill in all fields and upload both an image and a PDF.");
       return;
     }
 
@@ -22,16 +23,20 @@ const AddEvidence = ({ contract, account }) => {
     setErrorMessage("");
 
     try {
-      // Upload the image to IPFS using Pinata
-      const result = await uploadToIPFS(image);
-      const hash = result.IpfsHash; // Get the IPFS hash from the response
+      // Upload the image and PDF to IPFS
+      const imageResult = await uploadToIPFS(image);
+      const pdfResult = await uploadToIPFS(pdf);
 
-      // Now call the smart contract to add the evidence
+      const imageHash = imageResult.IpfsHash; // Get the IPFS hash for the image
+      const pdfHash = pdfResult.IpfsHash;     // Get the IPFS hash for the PDF
+
+      // Call the smart contract's addEvidence function with both hashes
       await contract.methods
-        .addEvidence(evidenceId, caseName, victimName, location, description, hash)
+        .addEvidence(evidenceId, caseName, victimName, location, description, imageHash, pdfHash)
         .send({ from: account });
 
       alert("Evidence added successfully!");
+
       // Reset the form fields
       setEvidenceId("");
       setCaseName("");
@@ -39,8 +44,9 @@ const AddEvidence = ({ contract, account }) => {
       setLocation("");
       setDescription("");
       setImage(null);
+      setPdf(null);
     } catch (err) {
-      console.error(err);
+      console.error("Error adding evidence to blockchain:", err);
       setErrorMessage("Failed to add evidence. Please try again.");
     } finally {
       setLoading(false);
@@ -109,7 +115,18 @@ const AddEvidence = ({ contract, account }) => {
             <InputGroup.Text>Image</InputGroup.Text>
             <FormControl
               type="file"
+              accept="image/*"
               onChange={(e) => setImage(e.target.files[0])}
+              disabled={loading}
+            />
+          </InputGroup>
+
+          <InputGroup className="mb-3">
+            <InputGroup.Text>PDF</InputGroup.Text>
+            <FormControl
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setPdf(e.target.files[0])}
               disabled={loading}
             />
           </InputGroup>

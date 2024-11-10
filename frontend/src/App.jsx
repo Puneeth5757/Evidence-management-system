@@ -9,7 +9,24 @@ import AllEvidence from "./components/AllEvidence";
 import { Container, Spinner } from "react-bootstrap";
 
 const contractABI = [
-  // Add all ABI items here, including getEvidence and addEvidence
+  // Add all ABI items here, including updated addEvidence and getEvidence with pdfHash
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "_evidenceId", "type": "string" },
+      { "name": "_caseName", "type": "string" },
+      { "name": "_victimName", "type": "string" },
+      { "name": "_location", "type": "string" },
+      { "name": "_description", "type": "string" },
+      { "name": "_evidenceHash", "type": "string" },
+      { "name": "_pdfHash", "type": "string" }
+    ],
+    "name": "addEvidence",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
   {
     "constant": true,
     "inputs": [{ "name": "_id", "type": "string" }],
@@ -21,27 +38,12 @@ const contractABI = [
       { "name": "location", "type": "string" },
       { "name": "description", "type": "string" },
       { "name": "evidenceHash", "type": "string" },
+      { "name": "pdfHash", "type": "string" },
       { "name": "timestamp", "type": "uint256" },
       { "name": "addedBy", "type": "address" }
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      { "name": "_evidenceId", "type": "string" },
-      { "name": "_caseName", "type": "string" },
-      { "name": "_victimName", "type": "string" },
-      { "name": "_location", "type": "string" },
-      { "name": "_description", "type": "string" },
-      { "name": "_evidenceHash", "type": "string" }
-    ],
-    "name": "addEvidence",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -55,7 +57,7 @@ const contractABI = [
   }
 ];
 
-const contractAddress = "0x991863cacd7FDBd71b468Ce8ea5C2B15036487Ad";
+const contractAddress = "0xD5580211753034720bE5fABABAA63847d1d79CAd";
 
 function App() {
   const [account, setAccount] = useState(null);

@@ -9,6 +9,7 @@ contract EvidenceManagement {
         string location;
         string description;
         string evidenceHash;
+        string pdfHash;
         uint256 timestamp;
         address addedBy;
     }
@@ -24,6 +25,7 @@ contract EvidenceManagement {
         string location,
         string description,
         string evidenceHash,
+        string pdfHash,
         address addedBy
     );
 
@@ -33,7 +35,8 @@ contract EvidenceManagement {
         string memory _victimName,
         string memory _location,
         string memory _description,
-        string memory _evidenceHash
+        string memory _evidenceHash,
+        string memory _pdfHash
     ) public {
         require(bytes(_evidenceId).length > 0, "Evidence ID cannot be empty");
         require(bytes(evidences[_evidenceId].evidenceId).length == 0, "Evidence with this ID already exists");
@@ -45,6 +48,7 @@ contract EvidenceManagement {
             _location,
             _description,
             _evidenceHash,
+            _pdfHash,
             block.timestamp,
             msg.sender
         );
@@ -59,11 +63,13 @@ contract EvidenceManagement {
             _location,
             _description,
             _evidenceHash,
+            _pdfHash,
             msg.sender
         );
     }
 
     function getEvidence(string memory _evidenceId) public view returns (
+        string memory,
         string memory,
         string memory,
         string memory,
@@ -82,6 +88,7 @@ contract EvidenceManagement {
             e.location,
             e.description,
             e.evidenceHash,
+            e.pdfHash,
             e.timestamp,
             e.addedBy
         );
