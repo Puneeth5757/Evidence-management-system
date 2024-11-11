@@ -98,3 +98,52 @@ contract EvidenceManagement {
         return evidenceIds;
     }
 }
+
+// const contractABI = [
+//   // Add all ABI items here, including updated addEvidence and getEvidence with pdfHash
+//   {
+//     "constant": false,
+//     "inputs": [
+//       { "name": "_evidenceId", "type": "string" },
+//       { "name": "_caseName", "type": "string" },
+//       { "name": "_victimName", "type": "string" },
+//       { "name": "_location", "type": "string" },
+//       { "name": "_description", "type": "string" },
+//       { "name": "_evidenceHash", "type": "string" },
+//       { "name": "_pdfHash", "type": "string" }
+//     ],
+//     "name": "addEvidence",
+//     "outputs": [],
+//     "payable": false,
+//     "stateMutability": "nonpayable",
+//     "type": "function"
+//   },
+//   {
+//     "constant": true,
+//     "inputs": [{ "name": "_id", "type": "string" }],
+//     "name": "getEvidence",
+//     "outputs": [
+//       { "name": "evidenceId", "type": "string" },
+//       { "name": "caseName", "type": "string" },
+//       { "name": "victimName", "type": "string" },
+//       { "name": "location", "type": "string" },
+//       { "name": "description", "type": "string" },
+//       { "name": "evidenceHash", "type": "string" },
+//       { "name": "pdfHash", "type": "string" },
+//       { "name": "timestamp", "type": "uint256" },
+//       { "name": "addedBy", "type": "address" }
+//     ],
+//     "payable": false,
+//     "stateMutability": "view",
+//     "type": "function"
+//   },
+//   {
+//     "constant": true,
+//     "inputs": [],
+//     "name": "getAllEvidence",
+//     "outputs": [{ "name": "", "type": "string[]" }],
+//     "payable": false,
+//     "stateMutability": "view",
+//     "type": "function"
+//   }
+// ];
