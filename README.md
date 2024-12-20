@@ -1,4 +1,4 @@
-Evidence Management System
+    Evidence Management System
 
 PROBLEM STATEMENT
 A system for managing evidence is needed that allows all stakeholders—such as police, lawyers, and judges—to securely access data without relying on a central authority, 
@@ -18,14 +18,20 @@ Folder Structure:
 
 EvidenceManagement-frontend/
     ├── README.md
-    ├── node_modules/
-    ├── public/
-    ├── img/
-    └── src/
-        ├── components/
-        ├── App.js
-        ├── index.js
-        └── firebase.js
+    ├── contracts/
+    ├── build/
+    ├── migrations/
+    └── frontend/
+        ├── node_modules/
+        ├── public
+        └── src/
+            ├── components/
+            ├── App.js
+            ├── index.js
+            └── firebase.js 
+            
+    
+        
 
 Local development
 Installation or Requirements and dependencies:
@@ -51,5 +57,6 @@ Run the application
 
 npm run dev - for frontend
 Building the application
+
 npm start
 Database connection
