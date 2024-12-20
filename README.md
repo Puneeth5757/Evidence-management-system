@@ -21,6 +21,7 @@ EvidenceManagement-frontend/
     ├── contracts/
     ├── build/
     ├── migrations/
+    ├── package.json/
     └── frontend/
         ├── node_modules/
         ├── public
@@ -28,7 +29,7 @@ EvidenceManagement-frontend/
             ├── components/
             ├── App.js
             ├── index.js
-            └── firebase.js 
+            └── App.test.js 
             
     
         
